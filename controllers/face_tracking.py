@@ -89,7 +89,7 @@ try:
     time.sleep(2.2)
 
     while True:
-        img = drone.get_frame_read().frame
+        img_capture = drone.get_frame_read().frame
 
         img_capture = cv2.resize(img_capture, (width, height))
 

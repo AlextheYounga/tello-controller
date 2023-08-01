@@ -2,17 +2,18 @@ from djitellopy import Tello
 import time
 
 
-tello = Tello()
+drone = Tello()
 
-tello.connect()
+drone.connect()
 
-battery = tello.get_battery()
-print(tello.get_battery())
+battery = drone.get_battery()
+print(drone.get_battery())
 
-tello.takeoff()
+drone.takeoff()
+time.sleep(1)
 
-tello.move_forward(200)
+drone.move_forward(200)
 
-tello.move_back(200)
+drone.move_back(200)
 
-tello.land()
+drone.land()

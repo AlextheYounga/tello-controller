@@ -1,11 +1,11 @@
 from djitellopy import Tello
 
 def test_connect():
-    tello = Tello()
-    tello.connect()
+    drone = Tello()
+    drone.connect()
 
-    battery = tello.get_battery()
+    battery = drone.get_battery()
 
-    print(tello.get_battery())
+    print(battery)
 
     assert isinstance(battery, int)
