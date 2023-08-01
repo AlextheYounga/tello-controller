@@ -1,3 +1,6 @@
 djitellopy
 pytest
 opencv-python
+av
+image
+pygame
