@@ -1,18 +1,18 @@
 from djitellopy import Tello
 import cv2
 
-width, height = 360, 240
-
 drone = Tello()
-drone.connect()
 
-battery = drone.get_battery()
-print(battery)
+drone.connect()
+print(drone.get_battery())
 
 drone.streamon()
 
-img_capture = drone.get_frame_read().frame
-
-img_capture = cv2.resize(img_capture, (width, height))
-
-cv2.imshow("Output", img_capture)
+try:
+    frame_reader = drone.get_frame_read()
+    while True:
+        cv2.imshow("Tello Stream", frame_reader.frame)
+        c = cv2.waitKey(1)
+except KeyboardInterrupt:
+    drone.end()
+    cv2.destroyAllWindows()
