@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import sys
 
-width, height = 360, 240
-fb_range = [6200, 6800]
+width, height = 1080, 720
+fb_range = [27900, 30600]
 pid = [0.4, 0.4, 0]  # Proportional, Integral, Derivative
 p_error = 0
 

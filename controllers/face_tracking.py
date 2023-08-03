@@ -5,8 +5,8 @@ import time
 import sys
 
 
-width, height = 360, 240
-fb_range = [6200, 6800]
+width, height = 1080, 720
+fb_range = [27900, 30600]
 pid = [0.4, 0.4, 0]  # Proportional, Integral, Derivative
 p_error = 0
 
@@ -54,10 +54,10 @@ def track_face(face_stats, p_error):
 
     forward_backward = 0
 
-    error = x - width // 2
+    distanceFromCenter = x - width // 2
 
-    # Speed is equal to pid proportional * error * integral * (error - p_error)
-    speed = pid[0] * error + pid[1] * (error - p_error)
+    # Speed is equal to pid proportional * distanceFromCenter * integral * (distanceFromCenter - p_error)
+    speed = pid[0] * distanceFromCenter + pid[1] * (distanceFromCenter - p_error)
     speed = int(np.clip(speed, -100, 100))
 
     if area > fb_range[0] and area < fb_range[1]:
@@ -69,39 +69,45 @@ def track_face(face_stats, p_error):
 
     if x == 0:
         speed = 0
-        error = 0
+        distanceFromCenter = 0
 
-    print("Speed", speed, "Forward Backward", forward_backward)
+        print("Speed", speed,
+              "Forward Backward", forward_backward,
+              "Center", face_stats[0],
+              "Area", face_stats[1]
+              )
     drone.send_rc_control(0, forward_backward, 0, speed)
-    return error
+    return distanceFromCenter
 
-
+time.sleep(4)
 drone = tello.Tello()
 drone.connect()
 
+print(drone.get_battery())
+
+drone.streamon()
+
+drone.takeoff()
+drone.send_rc_control(0, 0, 25, 0)
+
+time.sleep(2.1)
+
 try:
-    print(drone.get_battery())
-
-    drone.streamon()
-    drone.takeoff()
-    drone.send_rc_control(0, 0, 25, 0)
-
-    time.sleep(2.2)
-
     while True:
-        img_capture = drone.get_frame_read().frame
+        frame_reader = drone.get_frame_read().frame
 
-        img_capture = cv2.resize(img_capture, (width, height))
+        frame_reader = cv2.resize(frame_reader, (width, height))
 
-        img_face_capture, face_stats = find_face(img_capture)
+        img_face_capture, face_stats = find_face(frame_reader)
 
         p_error = track_face(face_stats, p_error)
 
-        # print("Center", face_stats[0], "Area", face_stats[1])
-        cv2.imshow("Output", img_face_capture)
+        cv2.imshow("Tello Drone Footage", img_face_capture)
+        cv2.waitKey(1)
 except:
-    print('Landing...')
-    drone.land()
+    print('Ending...')
+    drone.end()
+    cv2.destroyAllWindows()
 
     print('Shutting down...')
     sys.exit()
